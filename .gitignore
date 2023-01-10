@@ -229,3 +229,6 @@ tags
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,vim,visualstudiocode
+#
+input.txt
+output.txt
