@@ -28,7 +28,7 @@ RUN ./myFirstCob
 RUN curl -sL https://rpm.nodesource.com/setup_14.x | bash -
 RUN yum install -y nodejs
 
-COPY run_cobol.sh package.json package-lock.json server.js ./
+COPY *.cob run_cobol.sh package.json package-lock.json server.js ./
 RUN npm install
 
 # configure the container to run the hello world executable by default
