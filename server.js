@@ -19,7 +19,7 @@ app.post('/add', (req, res) => {
   fs.writeFileSync("input.txt",""); 
 
   var MaxL = operandOne.length;
-  if operandOne.length < operandTwo.length) {
+  if (operandOne.length < operandTwo.length) {
     MaxL = operandTwo.length;
   }
   if ((operandOne.length - operandTwo.length) > 0)
