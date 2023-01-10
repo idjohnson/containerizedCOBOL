@@ -1,0 +1,82 @@
+name: PR And Main Build
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  HostedActions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Turn on build light
+        run: |
+          curl -s -o /dev/null https://kasarest.freshbrewed.science/on?devip=192.168.1.3
+      - name: Build Dockerfile
+        run: |
+          export BUILDIMGTAG="`cat Dockerfile | tail -n1 | sed 's/^.*\///g'`"
+          docker build -t $BUILDIMGTAG .
+          docker images
+      - name: "HarborCR: Tag and Push"
+        run: |
+          export BUILDIMGTAG="`cat Dockerfile | tail -n1 | sed 's/^.*\///g'`"
+          export FINALBUILDTAG="`cat Dockerfile | tail -n1 | sed 's/^#//g'`"
+          docker tag $BUILDIMGTAG $FINALBUILDTAG
+          docker images
+          echo $CR_PAT | docker login harbor.freshbrewed.science -u $CR_USER --password-stdin
+          docker push $FINALBUILDTAG
+        env: # Or as an environment variable
+          CR_PAT: ${{ secrets.CR_PAT }}
+          CR_USER: ${{ secrets.CR_USER }}
+      - name: "Dockerhub: Tag and Push"
+        run: |
+          export BUILDIMGTAG="`cat Dockerfile | tail -n1 | sed 's/^.*\///g'`"
+          export FINALVERSION="`cat Dockerfile | tail -n1 | sed 's/^.*://g'`"
+          docker tag $BUILDIMGTAG idjohnson/coboladder:$FINALVERSION
+          docker images
+          echo $CR_PAT | docker login -u $CR_USER --password-stdin
+          docker push idjohnson/coboladder:$FINALVERSION
+        env: # Or as an environment variable
+          CR_PAT: ${{ secrets.DH_PATH }}
+          CR_USER: ${{ secrets.DH_LOGIN }}
+      - name: Build count
+        uses: masci/datadog@v1
+        with:
+          api-key: ${{ secrets.DATADOG_API_KEY }}
+          metrics: |
+            - type: "count"
+              name: "cobol.runs.count"
+              value: 1.0
+              host: ${{ github.repository_owner }}
+              tags:
+                - "project:${{ github.repository }}"
+                - "branch:${{ github.head_ref }}"
+      - name: Turn off build light
+        run: |
+          curl -s -o /dev/null https://kasarest.freshbrewed.science/off?devip=192.168.1.3
+
+  run-if-failed:
+    runs-on: ubuntu-latest
+    needs: [HostedActions]
+    if: always() && (needs.HostedActions.result == 'failure')
+    steps:
+      - name: Blink and Leave On build light
+        run: |
+          curl -s -o /dev/null https://kasarest.freshbrewed.science/off?devip=192.168.1.3 && sleep 5 \
+          && curl -s -o /dev/null https://kasarest.freshbrewed.science/on?devip=192.168.1.3 && sleep 5 \
+          &&  curl -s -o /dev/null https://kasarest.freshbrewed.science/off?devip=192.168.1.3 && sleep 5 \
+          && curl -s -o /dev/null https://kasarest.freshbrewed.science/on?devip=192.168.1.3
+      - name: Fail count
+        uses: masci/datadog@v1
+        with:
+          api-key: ${{ secrets.DATADOG_API_KEY }}
+          metrics: |
+            - type: "count"
+              name: "cobol.fails.count"
+              value: 1.0
+              host: ${{ github.repository_owner }}
+              tags:
+                - "project:${{ github.repository }}"
+                - "branch:${{ github.head_ref }}"

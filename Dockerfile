@@ -34,3 +34,5 @@ RUN npm install
 # configure the container to run the hello world executable by default
 # CMD ["./HelloWorld"]
 ENTRYPOINT ["./run_cobol.sh"]
+
+#harbor.freshbrewed.science/freshbrewedprivate/coboladder:0.0.1
