@@ -16,7 +16,7 @@ RUN tar -xzf gnu-cobol-1.1.tar.gz
 RUN cd gnu-cobol-1.1 && ./configure && make && make install
 
 # COBOL Compile
-COPY myFirstCob.cob /cobol/
+COPY *.cob /cobol/
 WORKDIR /cobol/
 RUN echo "/usr/local/lib" >> /etc/ld.so.conf.d/gnu-cobol-1.1.conf
 RUN ldconfig
@@ -28,7 +28,7 @@ RUN ./myFirstCob
 RUN curl -sL https://rpm.nodesource.com/setup_14.x | bash -
 RUN yum install -y nodejs
 
-COPY *.cob run_cobol.sh package.json package-lock.json server.js ./
+COPY run_cobol.sh package.json package-lock.json server.js ./
 RUN npm install
 
 # configure the container to run the hello world executable by default
