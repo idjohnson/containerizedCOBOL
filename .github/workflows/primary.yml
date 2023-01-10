@@ -19,17 +19,6 @@ jobs:
           export BUILDIMGTAG="`cat Dockerfile | tail -n1 | sed 's/^.*\///g'`"
           docker build -t $BUILDIMGTAG .
           docker images
-      - name: "HarborCR: Tag and Push"
-        run: |
-          export BUILDIMGTAG="`cat Dockerfile | tail -n1 | sed 's/^.*\///g'`"
-          export FINALBUILDTAG="`cat Dockerfile | tail -n1 | sed 's/^#//g'`"
-          docker tag $BUILDIMGTAG $FINALBUILDTAG
-          docker images
-          echo $CR_PAT | docker login harbor.freshbrewed.science -u $CR_USER --password-stdin
-          docker push $FINALBUILDTAG
-        env: # Or as an environment variable
-          CR_PAT: ${{ secrets.CR_PAT }}
-          CR_USER: ${{ secrets.CR_USER }}
       - name: "Dockerhub: Tag and Push"
         run: |
           export BUILDIMGTAG="`cat Dockerfile | tail -n1 | sed 's/^.*\///g'`"
@@ -42,6 +31,17 @@ jobs:
         env: # Or as an environment variable
           DOCKER_PASSWORD: ${{ secrets.DH_PAT }}
           DOCKER_USERNAME: ${{ secrets.DH_LOGIN }}
+      - name: "HarborCR: Tag and Push"
+        run: |
+          export BUILDIMGTAG="`cat Dockerfile | tail -n1 | sed 's/^.*\///g'`"
+          export FINALBUILDTAG="`cat Dockerfile | tail -n1 | sed 's/^#//g'`"
+          docker tag $BUILDIMGTAG $FINALBUILDTAG
+          docker images
+          echo $CR_PAT | docker login harbor.freshbrewed.science -u $CR_USER --password-stdin
+          docker push $FINALBUILDTAG
+        env: # Or as an environment variable
+          CR_PAT: ${{ secrets.CR_PAT }}
+          CR_USER: ${{ secrets.CR_USER }}
       - name: Build count
         uses: masci/datadog@v1
         with:
