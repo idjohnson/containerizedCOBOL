@@ -17,7 +17,7 @@ app.post('/add', (req, res) => {
   const regex = /^0+/i;
   console.log(`Adding ${operandOne} and ${operandTwo}`);
 
-  fs.writeFileSync("input.txt",operandOne.toString()); 
+  fs.writeFileSync("input.txt",operandOne.toString() + '\n'); 
   fs.appendFileSync("input.txt",operandTwo.toString()); 
   /*
   fs.writeFileSync("input.txt",""); 
