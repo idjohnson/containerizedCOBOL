@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "running COBOL"
-./myFirstCob
+./cobolApp
 echo "COBOL complete"
 
 npm start

@@ -22,7 +22,7 @@ RUN echo "/usr/local/lib" >> /etc/ld.so.conf.d/gnu-cobol-1.1.conf
 RUN ldconfig
 RUN cobc -V
 RUN cobc -x -free -o cobolApp myAddCobol3.cob
-RUN ./myFirstCob
+RUN ./cobolApp
 
 # NodeJs
 RUN curl -sL https://rpm.nodesource.com/setup_14.x | bash -
