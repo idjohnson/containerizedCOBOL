@@ -18,6 +18,10 @@ app.post('/add', (req, res) => {
 
   fs.writeFileSync("input.txt",""); 
 
+  var MaxL = operandOne.length;
+  if operandOne.length < operandTwo.length) {
+    MaxL = operandTwo.length;
+  }
   if ((operandOne.length - operandTwo.length) > 0)
   {
     var newT = "";
@@ -51,7 +55,7 @@ app.post('/add', (req, res) => {
     fs.readFile( __dirname + "/" + "output.txt", 'utf8', function (err, data) {
         console.log( data );
         //res.end( data );
-        res.send(data.toString());
+        res.send(data.toString().substring(0,MaxL));
      });
     //res.end( `${stdout}` );
   });
