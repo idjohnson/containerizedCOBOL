@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: add
-        image: harbor.freshbrewed.science/freshbrewedprivate/coboladder:0.0.1
+        image: harbor.freshbrewed.science/freshbrewedprivate/coboladder:0.0.2
         env:
         - name: APP_PORT
           value: "4000"

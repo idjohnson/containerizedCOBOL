@@ -38,4 +38,4 @@ RUN npm install
 # CMD ["./HelloWorld"]
 ENTRYPOINT ["./run_cobol.sh"]
 
-#harbor.freshbrewed.science/freshbrewedprivate/coboladder:0.0.1
+#harbor.freshbrewed.science/freshbrewedprivate/coboladder:0.0.2
