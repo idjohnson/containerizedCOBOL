@@ -14,8 +14,12 @@ app.post('/add', (req, res) => {
   let args = req.body;
   const [operandOne, operandTwo] = [Number(args['operandOne']), Number(args['operandTwo'])];
   
+  const regex = /^0+/i;
   console.log(`Adding ${operandOne} and ${operandTwo}`);
 
+  fs.writeFileSync("input.txt",operandOne.toString()); 
+  fs.appendFileSync("input.txt",operandTwo.toString()); 
+  /*
   fs.writeFileSync("input.txt",""); 
 
   var MaxL = operandOne.length;
@@ -40,8 +44,10 @@ app.post('/add', (req, res) => {
     fs.appendFileSync("input.txt", newT); 
     fs.appendFileSync("input.txt", operandTwo); 
   }
-
+  */
   
+  console.log(`wrote to input.txt`);
+
   exec("./cobolApp", (error, stdout, stderr) => {
     if (error) {
         console.log(`error: ${error.message}`);
@@ -53,9 +59,12 @@ app.post('/add', (req, res) => {
     }
     console.log(`stdout: ${stdout}`);
     fs.readFile( __dirname + "/" + "output.txt", 'utf8', function (err, data) {
-        console.log( data );
+        console.log(`got output.txt`);
+        console.log( data.toString() );
         //res.end( data );
-        res.send(data.toString().substring(0,MaxL));
+
+        // trim preceeding 0s
+        res.send(data.toString().replace(regex, ''));
      });
     //res.end( `${stdout}` );
   });
