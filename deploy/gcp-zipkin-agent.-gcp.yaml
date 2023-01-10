@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin
+  labels:
+    app: zipkin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin
+  template:
+    metadata:
+      labels:
+        app: zipkin
+    spec:
+      containers:
+      - name: zipkin
+        image: openzipkin/zipkin-gcp
+        env:
+        - name: STORAGE_TYPE
+          value: stackdriver
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /zipkin/.gcp/myanthosproject2-eea0dc5b11be.json
+        - name: STACKDRIVER_PROJECT_ID
+          value: myanthosproject2
+        volumeMounts:
+        - name: gcp-volume
+          mountPath: /zipkin/.gcp
+        ports:
+        - containerPort: 9411
+      volumes:
+      - name: gcp-volume 
+        configMap:
+          name: gcptracecred
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: zipkin
+  labels:
+    app: zipkin
+spec:
+  selector:
+    app: zipkin
+  ports:
+  - protocol: TCP
+    port: 9411
+    targetPort: 9411
+  type: ClusterIP
