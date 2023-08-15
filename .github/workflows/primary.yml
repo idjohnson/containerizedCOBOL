@@ -4,7 +4,10 @@ on:
     branches:
       - main
   pull_request:
-
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '0,15,30,45 * * * *'
+    
 jobs:
   HostedActions:
     runs-on: ubuntu-latest
@@ -46,6 +49,8 @@ jobs:
         run: |
            export BUILDIMGTAG="`cat Dockerfile | tail -n1 | sed 's/^.*\///g'`"
            export FINALVERSION="`cat Dockerfile | tail -n1 | sed 's/^.*://g'`"
+           echo "BUILDIMGTAG: $BUILDIMGTAG"
+           echo "FINALVERSION: $FINALVERSION"
            echo $GHPAT | docker login ghcr.io -u idjohnson --password-stdin
            docker tag $BUILDIMGTAG ghcr.io/idjohnson/coboladder:$FINALVERSION
            
