@@ -42,6 +42,17 @@ jobs:
         env: # Or as an environment variable
           CR_PAT: ${{ secrets.CR_PAT }}
           CR_USER: ${{ secrets.CR_USER }}
+      - name: "GHCR: Tag and Push"
+        run: |
+           export BUILDIMGTAG="`cat Dockerfile | tail -n1 | sed 's/^.*\///g'`"
+           export FINALVERSION="`cat Dockerfile | tail -n1 | sed 's/^.*://g'`"
+           echo $GHPAT | docker login ghcr.io -u idjohnson --password-stdin
+           docker tag $BUILDIMGTAG ghcr.io/idjohnson/coboladder:$FINALVERSION
+           
+           docker images
+           docker push ghcr.io/idjohnson/coboladder:$FINALVERSION
+        env: 
+          GHPAT: ${{ secrets.GHPAT }}
       - name: Build count
         uses: masci/datadog@v1
         with:
